@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ============================================================ -->
+<!-- ✏️ Lv.2 課題：タイトルを変えてみよう                          -->
+<!-- ============================================================ -->
+<title>🧩 クロスワードメーカー</title>
+
+<style>
+  /* ============================================================ */
+  /* ✏️ Lv.2 課題：色やフォントを変えてみよう                      */
+  /* ============================================================ */
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
+    background: #f5f0e8;        /* ← 背景色を変えてみよう */
+    min-height: 100vh;
+    padding: 24px 16px;
+    color: #2a2a2a;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 20px; }
+
+  .badge {
+    display: inline-block;
+    background: #2a2a2a; color: #f5f0e8;
+    font-size: 12px; padding: 3px 10px;
+    border-radius: 20px; margin-right: 6px;
+  }
+  .badge.warn { background: #b85c00; }
+
+  /* スコアバー */
+  .score-bar {
+    display: flex; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .score-text { font-size: 14px; font-weight: 600; }
+  .progress-wrap {
+    flex: 1; min-width: 120px;
+    height: 8px; background: #ddd;
+    border-radius: 4px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: #2d7a4f;   /* ← 進捗バーの色を変えてみよう */
+    border-radius: 4px; transition: width 0.4s;
+  }
+
+  /* ボタン */
+  .btn {
+    padding: 8px 16px; border-radius: 6px;
+    border: 1.5px solid #2a2a2a;
+    background: #fff; cursor: pointer;
+    font-size: 13px; font-weight: 600;
+  }
+  .btn:hover { background: #f0ebe0; }
+  .btn.primary { background: #2a2a2a; color: #fff; }
+  .btn.primary:hover { background: #444; }
+
+  /* レイアウト */
+  .layout {
+    display: flex; gap: 28px;
+    align-items: flex-start; flex-wrap: wrap;
+  }
+
+  /* グリッド */
+  table.cw {
+    border-collapse: collapse;
+    background: #2a2a2a;
+    border: 2px solid #2a2a2a;
+    border-radius: 6px; overflow: hidden;
+  }
+  table.cw td {
+    width: 44px; height: 44px;
+    background: #2a2a2a; padding: 0;
+  }
+  table.cw td.white {
+    background: #fff;
+    border: 1px solid #ccc;
+    position: relative;
+  }
+  table.cw td.white input {
+    width: 100%; height: 100%;
+    border: none; outline: none;
+    background: transparent;
+    text-align: center;
+    font-size: 18px; font-weight: 700;
+    color: #1a1a1a; cursor: pointer;
+    caret-color: transparent;
+  }
+  table.cw td.white input:focus { background: #fffbe6; }
+  table.cw td.white input.correct { background: #d4f0d4 !important; color: #1a6b2a; }
+  table.cw td.white input.incorrect {
+    background: #fde8e8 !important; color: #b02020;
+    animation: shake 0.3s ease;
+  }
+  @keyframes shake {
+    0%,100%{ transform:translateX(0) }
+    25%{ transform:translateX(-4px) }
+    75%{ transform:translateX(4px) }
+  }
+  .num-badge {
+    position: absolute; top: 2px; left: 3px;
+    font-size: 9px; color: #999; line-height: 1;
+    pointer-events: none;
+  }
+
+  /* ヒント */
+  .clues { min-width: 220px; max-width: 300px; }
+  .clues h2 { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
+  .clue-section { margin-bottom: 20px; }
+  .clue-item {
+    display: flex; gap: 8px;
+    padding: 6px 8px; border-radius: 6px;
+    font-size: 13px; cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .clue-item:hover { background: #ece7de; }
+  .clue-item.active { background: #fffbe6; border-color: #e0c84a; }
+  .clue-item.solved { color: #2d7a4f; }
+  .clue-num { font-weight: 700; min-width: 22px; color: #555; }
+
+  .skipped { font-size: 12px; color: #b85c00; margin-top: 12px; }
+
+  /* ============================================================ */
+  /* ✏️ Lv.5 課題：クリア画面のメッセージや色を変えてみよう         */
+  /* ============================================================ */
+  .congrats {
+    display: none;
+    margin-top: 20px; padding: 20px;
+    background: #d4f0d4; border-radius: 10px;
+    font-size: 18px; font-weight: 700;
+    color: #1a6b2a; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>🧩 {{ data.theme }} クロスワード</h1>
+<p class="subtitle">
+  <span class="badge">{{ data.placed_count }}語配置 / 全{{ data.total }}語</span>
+  {% if data.skipped %}
+  <span class="badge warn">{{ data.skipped|length }}語未配置</span>
+  {% endif %}
+</p>
+
+<div class="score-bar">
+  <span class="score-text" id="scoreText">0 / {{ data.placed_count }} 語正解</span>
+  <div class="progress-wrap">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <button class="btn" onclick="checkAll()">答え合わせ</button>
+  <button class="btn primary" onclick="revealAll()">全部見る</button>
+</div>
+
+<div class="layout">
+  <div>
+    <table class="cw" id="cwTable"></table>
+    {% if data.skipped %}
+    <p class="skipped">⚠️ 配置できなかった単語: {{ data.skipped | join(', ') }}</p>
+    {% endif %}
+  </div>
+  <div class="clues">
+    <div class="clue-section">
+      <h2>→ よこのカギ</h2>
+      <div id="acrossClues"></div>
+    </div>
+    <div class="clue-section">
+      <h2>↓ たてのカギ</h2>
+      <div id="downClues"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ✏️ Lv.5 課題：このメッセージを変えてみよう                    -->
+<!-- ============================================================ -->
+<div class="congrats" id="congrats">
+  🎉 全問正解！おめでとうございます！
+</div>
+
+<script>
+const DATA = {{ data_json | safe }};
+const ROWS = DATA.rows;
+const COLS = DATA.cols;
+
+const cellMap = {};
+DATA.cells.forEach(c => { cellMap[`${c.row},${c.col}`] = c; });
+
+// グリッド描画
+const table = document.getElementById('cwTable');
+for (let r = 0; r < ROWS; r++) {
+  const tr = document.createElement('tr');
+  for (let c = 0; c < COLS; c++) {
+    const td = document.createElement('td');
+    const cell = cellMap[`${r},${c}`];
+    if (cell) {
+      td.className = 'white';
+      if (cell.num) {
+        const badge = document.createElement('span');
+        badge.className = 'num-badge';
+        badge.textContent = cell.num;
+        td.appendChild(badge);
+      }
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.maxLength = 1;
+      input.dataset.row = r;
+      input.dataset.col = c;
+      input.dataset.answer = cell.answer;
+      input.addEventListener('input', e => { e.target.value = e.target.value.slice(-1); updateScore(); });
+      input.addEventListener('focus', e => highlightWord(parseInt(e.target.dataset.row), parseInt(e.target.dataset.col)));
+      td.appendChild(input);
+    }
+    tr.appendChild(td);
+  }
+  table.appendChild(tr);
+}
+
+// ヒント描画
+const acrossDiv = document.getElementById('acrossClues');
+const downDiv   = document.getElementById('downClues');
+[...DATA.placed].sort((a,b) => a.num - b.num).forEach(p => {
+  const div = document.createElement('div');
+  div.className = 'clue-item';
+  div.dataset.num = p.num;
+  div.dataset.dir = p.direction;
+  div.innerHTML = `<span class="clue-num">${p.num}</span><span>${p.hint}（${p.word.length}文字）</span>`;
+  div.addEventListener('click', () => {
+    const inp = getInput(p.display_row, p.display_col);
+    if (inp) { inp.focus(); highlightWord(p.display_row, p.display_col); }
+  });
+  (p.direction === 'across' ? acrossDiv : downDiv).appendChild(div);
+});
+
+function getInput(r, c) {
+  return document.querySelector(`input[data-row="${r}"][data-col="${c}"]`);
+}
+
+function highlightWord(r, c) {
+  document.querySelectorAll('.cw input').forEach(i => { i.parentElement.style.background = ''; });
+  document.querySelectorAll('.clue-item').forEach(d => d.classList.remove('active'));
+  DATA.placed.forEach(p => {
+    let inWord = false;
+    for (let i = 0; i < p.word.length; i++) {
+      const pr = p.direction === 'across' ? p.display_row : p.display_row + i;
+      const pc = p.direction === 'across' ? p.display_col + i : p.display_col;
+      if (pr === r && pc === c) { inWord = true; break; }
+    }
+    if (inWord) {
+      for (let i = 0; i < p.word.length; i++) {
+        const pr = p.direction === 'across' ? p.display_row : p.display_row + i;
+        const pc = p.direction === 'across' ? p.display_col + i : p.display_col;
+        const inp = getInput(pr, pc);
+        if (inp && !inp.classList.contains('correct')) inp.parentElement.style.background = '#fffbe6';
+      }
+      const clueEl = document.querySelector(`.clue-item[data-num="${p.num}"][data-dir="${p.direction}"]`);
+      if (clueEl) clueEl.classList.add('active');
+    }
+  });
+}
+
+function checkAll() {
+  document.querySelectorAll('.cw input').forEach(input => {
+    if (!input.value) return;
+    input.classList.remove('correct', 'incorrect');
+    if (input.value === input.dataset.answer) input.classList.add('correct');
+    else {
+      input.classList.add('incorrect');
+      setTimeout(() => input.classList.remove('incorrect'), 600);
+    }
+  });
+  updateScore();
+}
+
+function revealAll() {
+  document.querySelectorAll('.cw input').forEach(input => {
+    input.value = input.dataset.answer;
+    input.classList.add('correct');
+  });
+  updateScore();
+  document.getElementById('congrats').style.display = 'block';
+}
+
+function updateScore() {
+  let wordCorrect = 0;
+  DATA.placed.forEach(p => {
+    const allOk = Array.from({length: p.word.length}, (_, i) => {
+      const r = p.direction === 'across' ? p.display_row : p.display_row + i;
+      const c = p.direction === 'across' ? p.display_col + i : p.display_col;
+      const inp = getInput(r, c);
+      return inp && inp.value === inp.dataset.answer;
+    }).every(Boolean);
+    if (allOk) {
+      wordCorrect++;
+      const clueEl = document.querySelector(`.clue-item[data-num="${p.num}"][data-dir="${p.direction}"]`);
+      if (clueEl) clueEl.classList.add('solved');
+    }
+  });
+  document.getElementById('scoreText').textContent = `${wordCorrect} / ${DATA.placed_count} 語正解`;
+  document.getElementById('progressFill').style.width = `${(wordCorrect / DATA.placed_count) * 100}%`;
+  if (wordCorrect === DATA.placed_count) document.getElementById('congrats').style.display = 'block';
+}
+</script>
+</body>
+</html>
