@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 クロスワード作成ワークショップ 課題シート</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
+    background: #fafaf6;
+    color: #2a2a2a;
+    line-height: 1.7;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  h1 + .lead { color: #888; font-size: 14px; margin-bottom: 28px; }
+
+  h2 {
+    font-size: 20px;
+    margin: 36px 0 10px;
+    padding: 6px 12px;
+    background: #2a2a2a;
+    color: #fffaf0;
+    border-radius: 6px;
+  }
+  h3 {
+    font-size: 16px;
+    margin: 22px 0 8px;
+    border-left: 4px solid #e0a800;
+    padding-left: 10px;
+  }
+  p, li { font-size: 14px; }
+  ul, ol { padding-left: 24px; }
+  li { margin-bottom: 4px; }
+
+  code {
+    background: #f0ebe0;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: Consolas, Menlo, 'Courier New', monospace;
+    font-size: 13px;
+  }
+  pre {
+    background: #272822;
+    color: #f8f8f2;
+    padding: 12px 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: Consolas, Menlo, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 8px 0 14px;
+  }
+  pre code { background: transparent; padding: 0; color: inherit; }
+
+  .stars { color: #e0a800; letter-spacing: 1px; margin-left: 4px; }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e4ddd0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 10px 0 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+
+  .goal-box {
+    background: #fffaf0;
+    border-left: 6px solid #e0a800;
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .tip {
+    background: #eef6ff;
+    border-left: 4px solid #4a90d9;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin: 8px 0;
+  }
+  .tip::before { content: "💡 "; font-weight: 700; }
+
+  .warn {
+    background: #fff4e6;
+    border-left: 4px solid #e0a800;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin: 8px 0;
+  }
+  .warn::before { content: "⚠️ "; font-weight: 700; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0 18px;
+    font-size: 13px;
+  }
+  table th, table td {
+    border: 1px solid #e0d8c6;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  table th { background: #f0ebe0; font-weight: 700; }
+  table td code { white-space: nowrap; }
+
+  .edit-point {
+    display: inline-block;
+    background: #2a2a2a;
+    color: #fffaf0;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .timeline {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 4px 14px;
+    font-size: 13px;
+  }
+  .timeline .time { font-weight: 700; color: #555; }
+
+  hr { border: 0; border-top: 1px solid #e4ddd0; margin: 36px 0; }
+
+  .kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    border: 1px solid #bbb;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    background: #fafafa;
+    font-family: Consolas, Menlo, monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<h1>📋 クロスワード作成ワークショップ</h1>
+<p class="lead">Copilot Agentと協力して、チームだけのオリジナルクロスワードを作ろう</p>
+
+<div class="goal-box">
+  🎯 ゴール：<strong>Copilot Agent で「クロスワード用・単語生成エージェント」を作る</strong>。<br>
+  できるだけ多くの単語が配置されるように、エージェントへの指示を工夫していく演習です。
+</div>
+
+<h2>🤖 今日使う2つのツール</h2>
+<div class="card">
+  <p><strong>Copilot Agent</strong>（本日のメイン）<br>
+  カスタムエージェントを作る機能。<strong>テーマを投げると単語＆ヒントを返す「単語生成エージェント」</strong>を自分たちで設計します。<br>
+  → 課題A・Bで使用</p>
+  <p style="margin-top:10px"><strong>Copilot Chat</strong>（普通のチャット）<br>
+  コードの修正や見た目カスタマイズの相談に使う、一般的なチャット。「ここにタイマー機能を足して」などを依頼。<br>
+  → 課題Cで使用（任意）</p>
+</div>
+
+<h2>⏱️ タイムライン目安（60分）</h2>
+<div class="card">
+  <div class="timeline">
+    <div class="time">0-10分</div>   <div>導入・Copilot Agentの使い方説明・ファイルを開く</div>
+    <div class="time">10-20分</div>  <div><strong>課題A</strong>：単語生成エージェントを作る（Copilot Agent）</div>
+    <div class="time">20-50分</div>  <div><strong>課題B</strong>：エージェントの指示を4フェーズで磨く（Copilot Agent）<br>　B-1 表記・形式 → B-2 共通文字 → B-3 自由工夫 → B-4 汎用性検証</div>
+    <div class="time">50-60分</div>  <div>共有タイム（どういう指示が効いたか全体でシェア）</div>
+  </div>
+</div>
+
+<p style="font-size:13px;color:#888;margin-top:-10px">
+※ あくまで目安。早く終わったチームは次のフェーズに進んでOK。全部終わったら「課題C（カスタマイズ）」へ。
+</p>
+
+<h2>🗂️ ファイル構成</h2>
+<ul>
+  <li><code>crossword.html</code> … クロスワード本体。ダブルクリックでブラウザが開く</li>
+  <li><code>課題シート.html</code> … このファイル（別タブで開いて参照しながら進めよう）</li>
+</ul>
+
+<div class="tip">
+  編集は<strong>メモ帳</strong>や<strong>Notepad++</strong>など、テキストエディタならなんでもOK。VS Codeがあると色付きで見やすい。保存したら<code>crossword.html</code>のタブで <span class="kbd">Ctrl</span> + <span class="kbd">R</span>（更新）。
+</div>
+
+<hr>
+
+<h2>📍 crossword.html の編集ポイント一覧</h2>
+<p>ファイル内で <code>編集ポイント</code> と検索すると（<span class="kbd">Ctrl</span> + <span class="kbd">F</span>）すぐ飛べます。</p>
+
+<table>
+  <thead>
+    <tr><th style="width: 90px">番号</th><th style="width: 160px">変えると何が変わる？</th><th>場所・内容</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="edit-point">① </span></td>
+      <td>テーマ名と単語リスト</td>
+      <td><code>const THEME</code> と <code>const WORDS_AND_HINTS</code>。<br>Copilot Agentが作った単語とヒントをここに貼り付ける。<strong>課題A・Bで主に使う</strong>。</td>
+    </tr>
+    <tr>
+      <td><span class="edit-point">② </span></td>
+      <td>配置パラメータ</td>
+      <td><code>GRID_SIZE</code> 盤面サイズ / <code>TRIALS</code> 試行回数 / <code>SEED</code> 乱数シード。<br>数字を変えるだけ。<strong>課題Bで配置数が頭打ちになったら試す</strong>。</td>
+    </tr>
+    <tr>
+      <td><span class="edit-point">③ </span></td>
+      <td>ページタイトル</td>
+      <td><code>&lt;title&gt;</code>タグの中身。ブラウザのタブに表示される文字。</td>
+    </tr>
+    <tr>
+      <td><span class="edit-point">④ </span></td>
+      <td>背景色・フォント</td>
+      <td><code>body { background: #f5f0e8; }</code> のカラーコードを変える。</td>
+    </tr>
+    <tr>
+      <td><span class="edit-point">⑤ </span></td>
+      <td>全問正解時のメッセージ</td>
+      <td><code>&lt;div class="congrats"&gt;</code> の中身。絵文字や文面を自由に変えられる。</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>⭐ 課題A：単語生成エージェントを作る <span class="stars">⭐</span></h2>
+<p>所要：10分 / Copilot Agent / 編集ポイント <span class="edit-point">① </span></p>
+
+<h3>やること</h3>
+<p>Copilot Agent で、<strong>テーマを投げると単語10個＋ヒントを返してくれるエージェント</strong>を作る。<br>
+<strong>最初の指示はあえてシンプルに</strong>。たぶん出力はバラバラで貼り付けに苦労します。（次の B で整えます）。</p>
+
+<h3>手順</h3>
+<ol>
+  <li>チームでテーマを決める（例: 動物、アニメ、プログラミング用語、社内用語 など）</li>
+  <li>Copilot Agent で新しいエージェントを作る。<strong>エージェントへの指示（instructions / システムプロンプト）</strong>に、まずは最小限だけ書いてみる：
+    <pre><code>あなたはクロスワード用の単語生成アシスタントです。
+ユーザーが指定したテーマについて、
+単語を10個、ヒントとセットで考えてください。</code></pre>
+  </li>
+  <li>エージェントにテーマ（例：「動物」）を投げて、出力を見てみる。<br>
+  たぶんこんな感じになるはず:
+  <ul style="margin-top:6px">
+    <li>マークダウンの箇条書きや表形式で返ってきて、そのままでは貼れない</li>
+    <li>単語がカタカナ・ひらがな・漢字で混ざっている</li>
+    <li>「以下が動物の単語10個です…」みたいな前置きが入る</li>
+  </ul>
+  </li>
+  <li>出力を <strong>手で整形しながら</strong> <code>crossword.html</code> の <span class="edit-point">① </span> にある <code>WORDS_AND_HINTS</code> に貼り付けてみる。<code>THEME</code> もテーマ名に変える。</li>
+  <li>ファイルを保存して、ブラウザのタブで <span class="kbd">Ctrl</span>+<span class="kbd">R</span>（更新）。画面上部の<strong>「配置結果 X / Y 語」</strong>を確認。</li>
+</ol>
+
+<div class="tip">
+  整形に時間をかけすぎないのがコツ。貼れる範囲で貼って配置数を1回見たら先へ進みましょう。次の B-1 で「整形そのものをエージェントに任せる」改良をします。
+</div>
+
+<div class="warn">
+  うまく貼れなくて画面が真っ白になっても大丈夫。<span class="kbd">F12</span>（DevTools）→ Console でエラーの場所が分かります。配列の <code>[</code> <code>]</code>、各要素のカンマ <code>,</code> が崩れやすいポイント。どうしても動かなければそのまま B-1 に進んでOK。
+</div>
+
+<hr>
+
+<h2>⭐⭐ 課題B：エージェントの指示を4フェーズで磨く <span class="stars">⭐⭐</span></h2>
+<p>所要：40分（4フェーズ × 10分）/ Copilot Agent / 編集ポイント <span class="edit-point">① </span></p>
+
+<h3>やること</h3>
+<p>課題Aで作ったエージェントは配置数が少なめなはず。<strong>4つのフェーズに分けて段階的に指示を改良</strong>していきます。<br>
+各フェーズ後に配置数を記録して、「どの改良がどれだけ効いたか」を可視化しましょう。</p>
+
+<h3>なぜ配置数が変わるのか</h3>
+<p>クロスワードは「単語同士が<strong>共通の文字で交差する</strong>」ことで配置されます。共通文字を持つ単語ペアが少ないと、どんなにアルゴリズムを頑張っても配置できません。つまり <strong>「共通文字が多い単語セット」を出してくれるエージェントが正解に近い</strong>。</p>
+
+<h3>📝 記録シート（チームでメモ）</h3>
+<table>
+  <thead>
+    <tr><th style="width:80px">フェーズ</th><th style="width:100px">配置数</th><th>試した変更</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>A（初期）</td><td>&nbsp;　/　</td><td>&nbsp;</td></tr>
+    <tr><td>B-1</td><td>&nbsp;　/　</td><td>&nbsp;</td></tr>
+    <tr><td>B-2</td><td>&nbsp;　/　</td><td>&nbsp;</td></tr>
+    <tr><td>B-3</td><td>&nbsp;　/　</td><td>&nbsp;</td></tr>
+    <tr><td>B-4</td><td>&nbsp;　/　</td><td>別テーマ：</td></tr>
+  </tbody>
+</table>
+
+<hr style="margin:20px 0">
+
+<h3>🅱️1 出力を「そのまま貼り付けられる形」に揃える（10分）</h3>
+<p>課題Aで「毎回手で整形するのしんどい…」となったはず。ここを解決する。<br>
+エージェントの指示に次の2つを追加:</p>
+<ul>
+  <li><strong>出力フォーマットを指定</strong>：下記のようなJavaScript配列リテラル形式だけで出してもらう。
+    <pre><code>出力は以下のJavaScript配列リテラル形式のみで返してください。
+前置き・後書きの説明文・マークダウンのコードフェンスは一切含めないでください。
+
+[
+  {word: "ラーメン", hint: "中華麺を使った料理"},
+  {word: "カレー",   hint: "スパイスの効いた料理"}
+]</code></pre>
+    → <code>crossword.html</code> の <code>WORDS_AND_HINTS</code> にそのままコピペできる形で出してもらう、という発想。整形作業をエージェント側に寄せる。
+  </li>
+  <li><strong>使う文字種を絞る</strong>：「単語は<strong>カタカナかひらがな</strong>で書く。漢字・英字・数字は使わない」
+    → クロスワードは「文字の一致」で交差する。漢字や英字が混ざると交差マスを作れない。<br>
+    （このアプリではカタカナとひらがなを同じ文字として扱うので、どちらか一方でも混在でもOK）
+  </li>
+</ul>
+<div class="tip">指示を更新 → エージェントを再実行 → <code>WORDS_AND_HINTS</code> に貼り付け（今度はコピペだけで済むはず）→ 配置数を記録</div>
+
+<h3>🅱️2 共通文字を意識させる（10分）</h3>
+<p>ここが<strong>本日の肝</strong>。「共通文字が多い単語を選べ」とエージェントに考えさせる。次を試す:</p>
+<ul>
+  <li><strong>明示的に要求</strong>：「単語同士で共通する文字が多くなるように選ぶこと」</li>
+  <li><strong>2段階で考えさせる</strong>：「まず候補を30個挙げる → その中から共通文字が最も多くなる10個を選んで出力」</li>
+  <li><strong>具体例（few-shot）</strong>：「例: 『ラーメン』と『テンプラ』は『ラ』『ン』が共通、『ラーメン』と『ウドン』は『ン』が共通。こうやって文字がつながる関係を多く含むセットにする」</li>
+  <li><strong>NG例を示す</strong>：「NG例: 『トラ』『イヌ』『ゾウ』のように共通文字が1つもない組み合わせは避ける」</li>
+</ul>
+<div class="tip">効果が大きいのはどれか？複数入れるとどうなる？試行錯誤してみましょう。</div>
+
+<h3>🅱️3 自由工夫で最高記録を狙う（10分）</h3>
+<p>ここまでで学んだことを総動員。チームで自由に工夫して配置数を伸ばす。アイデア例:</p>
+<ul>
+  <li>「共通文字が多い<strong>ペアが最低5組できるように</strong>」など数値的な制約を足す</li>
+  <li><strong>頻出の文字を多く含む単語を優先</strong>するよう指示</li>
+  <li>エージェントへの「役割」をより具体化（例：「あなたはクロスワードパズル作家で、30年の経験がある」）</li>
+  <li>編集ポイント <span class="edit-point">② </span> の <code>SEED</code> の数字を変えて別レイアウトを試す（同じ単語でも配置数が変わることがある）</li>
+</ul>
+
+<div class="warn">
+  指示を盛りすぎて品質が下がることもあります（ヒントがテキトーになる、単語がマイナーすぎる等）。<strong>効かなかった一文は消す</strong>ことも大事。
+</div>
+
+<h3>🅱️4 別テーマで汎用性を検証する（10分）</h3>
+<p>B-3まででベストなエージェントができたはず。でも、それは最初のテーマ専用に「<strong>過剰チューニング</strong>」されているかも。全く違うテーマを投げて、同じくらい配置数が出るかテストします。</p>
+<ol>
+  <li>元と大きく違うテーマを選ぶ（例: 元が「動物」なら「楽器」「都道府県」「プログラミング言語」など）</li>
+  <li>指示は<strong>変えずに</strong>、同じエージェントに新しいテーマを投げる</li>
+  <li>出力を <code>WORDS_AND_HINTS</code> に貼り付けて配置数を確認</li>
+  <li>比較：
+    <ul>
+      <li>✅ 元のテーマと同じくらい配置できた → 汎用性の高い良いエージェント</li>
+      <li>⚠️ 大幅に落ちた → 元のテーマに過剰チューニング。指示が具体的すぎた可能性</li>
+    </ul>
+  </li>
+  <li>もし落ちていたら、指示を「どんなテーマでも使える」形に書き直して再チャレンジ</li>
+</ol>
+
+<div class="tip">
+  💡 <strong>学びのポイント</strong>：良いプロンプトは、入力が変わっても同じ品質を保てるもの。特定の入力だけに効く指示は、実は弱い指示。実務のエージェント設計でも効いてくる感覚です。
+</div>
+
+<hr>
+
+<h2>⭐⭐⭐ 課題C：カスタマイズ（時間があれば） <span class="stars">⭐⭐⭐</span></h2>
+<p>Bが早く終わって時間が余ったチーム向け / <strong>Copilot Chat を使用</strong>（エージェント作成ではなく普通のチャット）</p>
+
+<div class="tip">
+  以降はコード修正がメイン。Bまで終わっていれば本日の目的は達成しているので、無理にやらなくて大丈夫です。
+</div>
+
+<h3>C-1. 見た目リニューアル（簡単）</h3>
+<p>編集ポイント <span class="edit-point">③ </span><span class="edit-point">④ </span><span class="edit-point">⑤ </span> を直接いじって、背景色・フォント・タイトル・メッセージを変える。またはCopilot Chatに依頼：</p>
+<pre><code>crossword.htmlの背景色・フォント・タイトル・ボタン・全問正解メッセージを
+「***」な雰囲気に変えてください。
+CSSのカラーコード、font-family、該当テキストを示してください。</code></pre>
+
+<h3>C-2. チーム名入力欄（簡単）</h3>
+<p>ページの上部に「チーム名：[        ]」の入力欄を追加。</p>
+
+<h3>C-3. タイマー表示（中級）</h3>
+<p>最初のマスをクリックした時刻からの経過時間を画面に表示。Copilot Chatへの依頼例：</p>
+<pre><code>crossword.htmlに、最初にマスをクリックしてからの経過時間を
+MM:SS形式で画面上部に表示する機能を追加してください。
+HTMLとJavaScriptの追加コードを示してください。</code></pre>
+
+<h3>C-4. ヒントボタン（上級）</h3>
+<p>「1マスだけ答えを見せる」ボタン。選択中の単語の、まだ埋まっていないマスを1つ自動で埋める。</p>
+
+<h3>C-5. クリア演出（上級）</h3>
+<p>全問正解時に紙吹雪やアニメーション。Copilot Chatに「外部ライブラリを使わずCSSだけで実装して」と依頼するとライブラリ追加不要で動かせる。</p>
+
+<h3>C-6. 自由課題（難易度いろいろ）</h3>
+<p>「こんな機能が欲しい」「こう動いたら楽しい」というアイデアがあれば、何でもCopilot Chatに相談して追加してみよう。例:</p>
+<ul>
+  <li>BGMや効果音を付ける</li>
+  <li>リセットボタン / やり直しボタンを追加</li>
+  <li>スマホでも遊びやすいようにレイアウトを調整</li>
+  <li>「全部見る」を押す前に確認ダイアログを出す</li>
+  <li>キーボードショートカットを追加する</li>
+  <li>ダークモード切替ボタン</li>
+  <li>…その他チームのアイデア次第</li>
+</ul>
+
+<div class="tip">
+  C-2〜C-6 は <strong>Copilot Chat に <code>crossword.html</code> を読ませて「ここにこういう機能を足して」と依頼</strong>するのがおすすめ。出てきたコードをファイルに貼り付けて動作確認。うまく動かなかったらエラーメッセージを Copilot Chat に見せてデバッグを依頼しよう。
+</div>
+
+<hr>
+
+<h2>🎮 クロスワードの操作方法</h2>
+<ul>
+  <li>マスをクリックして文字入力 → <strong>自動で次のマスへ進む</strong></li>
+  <li>矢印キー（← → ↑ ↓）で移動</li>
+  <li><span class="kbd">Backspace</span> で前のマスへ戻って消去</li>
+  <li><span class="kbd">Space</span> または同じマスを2回クリックで<strong>縦↔横を切り替え</strong></li>
+  <li>ヒント文をクリックするとその単語の先頭マスに飛ぶ</li>
+  <li><strong>ひらがな・カタカナどちらで入力してもOK</strong>（自動でカタカナに変換）</li>
+  <li>「答え合わせ」で正解マスが緑、間違いマスが赤に</li>
+  <li>「全部見る」で答えが全マス表示される（時間切れの時用）</li>
+</ul>
+
+<hr>
+
+<h2>🆘 困ったとき</h2>
+<ul>
+  <li><strong>画面が真っ白になった</strong> → JavaScriptのエラー。配列のカッコ・カンマが崩れていないか確認。<span class="kbd">F12</span>（DevTools）→ Consoleタブにエラーが出ている</li>
+  <li><strong>配置数が増えない</strong> → 単語の表記揺れ（カタカナ/ひらがな混在）を疑う。<code>SEED</code> を別の数字にしてみる</li>
+  <li><strong>エージェントの出力がコードにならない</strong> → エージェントの指示に「出力は配列リテラルのみ。マークダウンのコードフェンスや説明文は一切含めない」を追加</li>
+  <li><strong>ファイルを保存したのに反映されない</strong> → ブラウザのキャッシュ。<span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">R</span> でハードリロード</li>
+</ul>
+
+</body>
+</html>

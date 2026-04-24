@@ -5,31 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ============================================================ -->
-<!-- ✏️ Lv.2 課題：タイトルを変えてみよう                          -->
+<!-- ✏️ 編集ポイント ③：ページのタブタイトル                       -->
 <!-- ============================================================ -->
 <title>🧩 クロスワードメーカー</title>
 
 <style>
-  /* ============================================================ */
-  /* ✏️ Lv.2 課題：色やフォントを変えてみよう                      */
-  /* ============================================================ */
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  /* ============================================================ */
+  /* ✏️ 編集ポイント ④：背景色・フォントなどの見た目                */
+  /* ============================================================ */
   body {
     font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
-    background: #f5f0e8;        /* ← 背景色を変えてみよう */
+    background: #f5f0e8;        /* ← この色コードを変えると背景色が変わる */
     min-height: 100vh;
     padding: 24px 16px;
     color: #2a2a2a;
   }
 
-  h1 {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-
+  h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
   .subtitle { font-size: 13px; color: #888; margin-bottom: 20px; }
 
   .badge {
@@ -40,7 +34,6 @@
   }
   .badge.warn { background: #b85c00; }
 
-  /* スコアバー */
   .score-bar {
     display: flex; align-items: center;
     gap: 12px; flex-wrap: wrap;
@@ -53,11 +46,10 @@
     border-radius: 4px; overflow: hidden;
   }
   .progress-fill {
-    height: 100%; background: #2d7a4f;   /* ← 進捗バーの色を変えてみよう */
+    height: 100%; background: #2d7a4f;
     border-radius: 4px; transition: width 0.4s;
   }
 
-  /* ボタン */
   .btn {
     padding: 8px 16px; border-radius: 6px;
     border: 1.5px solid #2a2a2a;
@@ -68,28 +60,16 @@
   .btn.primary { background: #2a2a2a; color: #fff; }
   .btn.primary:hover { background: #444; }
 
-  /* レイアウト */
-  .layout {
-    display: flex; gap: 28px;
-    align-items: flex-start; flex-wrap: wrap;
-  }
+  .layout { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
 
-  /* グリッド */
   table.cw {
     border-collapse: collapse;
     background: #2a2a2a;
     border: 2px solid #2a2a2a;
     border-radius: 6px; overflow: hidden;
   }
-  table.cw td {
-    width: 44px; height: 44px;
-    background: #2a2a2a; padding: 0;
-  }
-  table.cw td.white {
-    background: #fff;
-    border: 1px solid #ccc;
-    position: relative;
-  }
+  table.cw td { width: 44px; height: 44px; background: #2a2a2a; padding: 0; }
+  table.cw td.white { background: #fff; border: 1px solid #ccc; position: relative; }
   table.cw td.white input {
     width: 100%; height: 100%;
     border: none; outline: none;
@@ -117,7 +97,6 @@
     pointer-events: none;
   }
 
-  /* ヒント */
   .clues { min-width: 220px; max-width: 300px; }
   .clues h2 { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
   .clue-section { margin-bottom: 20px; }
@@ -134,9 +113,22 @@
 
   .skipped { font-size: 12px; color: #b85c00; margin-top: 12px; }
 
-  /* ============================================================ */
-  /* ✏️ Lv.5 課題：クリア画面のメッセージや色を変えてみよう         */
-  /* ============================================================ */
+  /* 配置結果カード */
+  .stats-card {
+    display: inline-block;
+    background: #fff;
+    border: 2px solid #2a2a2a;
+    padding: 14px 22px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .stats-card .stats-label { font-size: 12px; color: #888; letter-spacing: 0.1em; }
+  .stats-card .stats-main { font-size: 22px; font-weight: 700; margin-top: 2px; }
+  .stats-card .stats-main .hit { color: #2d7a4f; font-size: 28px; }
+  .stats-card .stats-main .total { color: #2a2a2a; }
+  .stats-card .stats-skipped { font-size: 12px; color: #b85c00; margin-top: 6px; }
+
   .congrats {
     display: none;
     margin-top: 20px; padding: 20px;
@@ -148,16 +140,16 @@
 </head>
 <body>
 
-<h1>🧩 {{ data.theme }} クロスワード</h1>
-<p class="subtitle">
-  <span class="badge">{{ data.placed_count }}語配置 / 全{{ data.total }}語</span>
-  {% if data.skipped %}
-  <span class="badge warn">{{ data.skipped|length }}語未配置</span>
-  {% endif %}
-</p>
+<h1 id="title">🧩 クロスワード</h1>
+
+<div class="stats-card">
+  <div class="stats-label">配置結果</div>
+  <div class="stats-main"><span class="hit" id="placedCount">0</span> <span class="total">/ <span id="totalCount">0</span> 語</span></div>
+  <div class="stats-skipped" id="skippedText" style="display:none"></div>
+</div>
 
 <div class="score-bar">
-  <span class="score-text" id="scoreText">0 / {{ data.placed_count }} 語正解</span>
+  <span class="score-text" id="scoreText"></span>
   <div class="progress-wrap">
     <div class="progress-fill" id="progressFill" style="width:0%"></div>
   </div>
@@ -168,9 +160,7 @@
 <div class="layout">
   <div>
     <table class="cw" id="cwTable"></table>
-    {% if data.skipped %}
-    <p class="skipped">⚠️ 配置できなかった単語: {{ data.skipped | join(', ') }}</p>
-    {% endif %}
+    <p class="skipped" id="skippedList" style="display:none"></p>
   </div>
   <div class="clues">
     <div class="clue-section">
@@ -185,16 +175,253 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- ✏️ Lv.5 課題：このメッセージを変えてみよう                    -->
+<!-- ✏️ 編集ポイント ⑤：全問正解時のメッセージ                     -->
 <!-- ============================================================ -->
 <div class="congrats" id="congrats">
   🎉 全問正解！おめでとうございます！
 </div>
 
 <script>
-const DATA = {{ data_json | safe }};
+// ============================================================
+// ✏️ 編集ポイント ①：テーマと単語リスト（課題A・Bで書き換え）
+//    Copilot Agentに生成してもらった単語とヒントをここに貼り付け
+//    wordはカタカナで、hintは日本語で書いてね
+// ============================================================
+
+const THEME = "動物";
+
+const WORDS_AND_HINTS = [
+  {word: "ネコ", hint: "家で飼われる動物"},
+  {word: "イヌ", hint: "人に忠実"},
+  {word: "ゾウ", hint: "長い鼻"},
+  {word: "キリン", hint: "首がとても長い"},
+  {word: "ライオン", hint: "百獣の王"},
+  {word: "トラ", hint: "縞模様の猛獣"},
+  {word: "ペンギン", hint: "飛べない鳥"},
+  {word: "カンガルー", hint: "袋で子育て"},
+  {word: "パンダ", hint: "白黒の人気者"},
+  {word: "サル", hint: "木登り名人"}
+]
+;
+
+// ============================================================
+// ✏️ 編集ポイント ②：配置パラメータ（数字を変えてみよう）
+// ============================================================
+
+const GRID_SIZE = 20;   // 盤面サイズ（15〜25がおすすめ）
+const TRIALS    = 300;  // 試行回数。増やすと配置成功率が上がる（重くなる）
+const SEED      = 42;   // 乱数シード。変えると別のレイアウトを試せる
+
+// ============================================================
+// 🔧 配置ロジック（ここはいじらなくてOK）
+// ============================================================
+
+const EMPTY = '　';  // 全角スペース = 空きマス
+
+// シード付き乱数（Mulberry32）
+function makeRng(seed) {
+  let s = seed >>> 0;
+  return function() {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffleInPlace(arr, rng) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function createEmptyGrid(size) {
+  return Array.from({length: size}, () => Array(size).fill(EMPTY));
+}
+
+function canPlace(grid, word, row, col, direction, size) {
+  if (direction === 'across') {
+    if (col < 0 || col + word.length > size || row < 0 || row >= size) return false;
+    if (col > 0 && grid[row][col-1] !== EMPTY) return false;
+    if (col + word.length < size && grid[row][col+word.length] !== EMPTY) return false;
+    let crosses = 0;
+    for (let i = 0; i < word.length; i++) {
+      const cell = grid[row][col+i];
+      const ch = word[i];
+      if (cell !== EMPTY && cell !== ch) return false;
+      if (cell === ch) crosses++;
+      else {
+        if (row > 0 && grid[row-1][col+i] !== EMPTY) return false;
+        if (row < size-1 && grid[row+1][col+i] !== EMPTY) return false;
+      }
+    }
+    return crosses >= 1;
+  } else {
+    if (row < 0 || row + word.length > size || col < 0 || col >= size) return false;
+    if (row > 0 && grid[row-1][col] !== EMPTY) return false;
+    if (row + word.length < size && grid[row+word.length][col] !== EMPTY) return false;
+    let crosses = 0;
+    for (let i = 0; i < word.length; i++) {
+      const cell = grid[row+i][col];
+      const ch = word[i];
+      if (cell !== EMPTY && cell !== ch) return false;
+      if (cell === ch) crosses++;
+      else {
+        if (col > 0 && grid[row+i][col-1] !== EMPTY) return false;
+        if (col < size-1 && grid[row+i][col+1] !== EMPTY) return false;
+      }
+    }
+    return crosses >= 1;
+  }
+}
+
+function placeWord(grid, word, row, col, direction) {
+  for (let i = 0; i < word.length; i++) {
+    if (direction === 'across') grid[row][col+i] = word[i];
+    else grid[row+i][col] = word[i];
+  }
+}
+
+function tryBuild(wordsAndHints, order, size) {
+  const placedWords = [];
+  const grid = createEmptyGrid(size);
+  const words = order.map(i => wordsAndHints[i]);
+  const firstWord = words[0].word;
+  const row = Math.floor(size / 2);
+  const col = Math.floor((size - firstWord.length) / 2);
+  placeWord(grid, firstWord, row, col, 'across');
+  placedWords.push({...words[0], row, col, direction: 'across'});
+
+  for (let idx = 1; idx < words.length; idx++) {
+    const item = words[idx];
+    const word = item.word;
+    let best = null, bestScore = -1;
+    for (const placed of placedWords) {
+      for (let pi = 0; pi < placed.word.length; pi++) {
+        const pchar = placed.word[pi];
+        for (let wi = 0; wi < word.length; wi++) {
+          if (pchar !== word[wi]) continue;
+          const newDir = placed.direction === 'across' ? 'down' : 'across';
+          let r, c;
+          if (placed.direction === 'across') { r = placed.row - wi; c = placed.col + pi; }
+          else                                { r = placed.row + pi; c = placed.col - wi; }
+          if (canPlace(grid, word, r, c, newDir, size)) {
+            let crosses = 0;
+            for (let i = 0; i < word.length; i++) {
+              const cell = newDir === 'across' ? grid[r][c+i] : grid[r+i][c];
+              if (cell === word[i]) crosses++;
+            }
+            if (crosses > bestScore) { bestScore = crosses; best = [r, c, newDir]; }
+          }
+        }
+      }
+    }
+    if (best) {
+      const [r, c, d] = best;
+      placeWord(grid, word, r, c, d);
+      placedWords.push({...item, row: r, col: c, direction: d});
+    }
+  }
+  return {grid, placed: placedWords};
+}
+
+function buildBestCrossword(wordsAndHints, trials, size, seed) {
+  const rng = makeRng(seed);
+  const n = wordsAndHints.length;
+  let bestResult = null, bestCount = 0;
+  const orders = [Array.from({length: n}, (_, i) => i)];
+  for (let t = 0; t < trials; t++) {
+    const o = Array.from({length: n}, (_, i) => i);
+    shuffleInPlace(o, rng);
+    orders.push(o);
+  }
+  for (const order of orders) {
+    const result = tryBuild(wordsAndHints, order, size);
+    if (result.placed.length > bestCount) {
+      bestCount = result.placed.length;
+      bestResult = result;
+      if (bestCount === n) break;
+    }
+  }
+  return bestResult;
+}
+
+function prepareData() {
+  // ひらがな・カタカナを同じ文字として扱うため、配置前にカタカナへ正規化
+  const normalizedWords = WORDS_AND_HINTS.map(w => ({...w, word: toKatakana(w.word)}));
+  const {grid, placed} = buildBestCrossword(normalizedWords, TRIALS, GRID_SIZE, SEED);
+  const rowsUsed = [], colsUsed = [];
+  for (const p of placed) {
+    if (p.direction === 'across') {
+      rowsUsed.push(p.row);
+      for (let i = 0; i < p.word.length; i++) colsUsed.push(p.col + i);
+    } else {
+      for (let i = 0; i < p.word.length; i++) rowsUsed.push(p.row + i);
+      colsUsed.push(p.col);
+    }
+  }
+  const minR = Math.max(0, Math.min(...rowsUsed) - 1);
+  const minC = Math.max(0, Math.min(...colsUsed) - 1);
+  const maxR = Math.min(GRID_SIZE - 1, Math.max(...rowsUsed) + 1);
+  const maxC = Math.min(GRID_SIZE - 1, Math.max(...colsUsed) + 1);
+  const trimmed = [];
+  for (let r = minR; r <= maxR; r++) trimmed.push(grid[r].slice(minC, maxC + 1));
+
+  const numMap = {};
+  const sortedPlaced = [...placed].sort((a, b) => a.row - b.row || a.col - b.col);
+  for (let i = 0; i < sortedPlaced.length; i++) {
+    const p = sortedPlaced[i];
+    const key = `${p.row - minR},${p.col - minC}`;
+    if (!(key in numMap)) numMap[key] = i + 1;
+    p.num = numMap[key];
+    p.display_row = p.row - minR;
+    p.display_col = p.col - minC;
+  }
+  const cells = [];
+  for (let r = 0; r < trimmed.length; r++) {
+    for (let c = 0; c < trimmed[r].length; c++) {
+      const ch = trimmed[r][c];
+      if (ch !== EMPTY) cells.push({row: r, col: c, answer: ch, num: numMap[`${r},${c}`]});
+    }
+  }
+  const skipped = WORDS_AND_HINTS.filter(w => !placed.some(p => p.word === toKatakana(w.word))).map(w => w.word);
+  return {
+    rows: trimmed.length,
+    cols: trimmed[0] ? trimmed[0].length : 0,
+    cells, placed, skipped,
+    theme: THEME,
+    total: WORDS_AND_HINTS.length,
+    placed_count: placed.length,
+  };
+}
+
+// ============================================================
+// 🖼️ 画面描画と入力処理（ここはいじらなくてOK）
+// ============================================================
+
+const DATA = prepareData();
 const ROWS = DATA.rows;
 const COLS = DATA.cols;
+
+document.getElementById('title').textContent = `🧩 ${DATA.theme} クロスワード`;
+document.getElementById('placedCount').textContent = DATA.placed_count;
+document.getElementById('totalCount').textContent = DATA.total;
+if (DATA.skipped.length) {
+  const st = document.getElementById('skippedText');
+  st.textContent = `⚠️ 未配置: ${DATA.skipped.join('、')}`;
+  st.style.display = 'block';
+  const sl = document.getElementById('skippedList');
+  sl.textContent = `⚠️ 配置できなかった単語: ${DATA.skipped.join(', ')}`;
+  sl.style.display = 'block';
+}
+document.getElementById('scoreText').textContent = `0 / ${DATA.placed_count} 語正解`;
+
+// ひらがな → カタカナ変換（答え合わせで両対応にするため）
+function toKatakana(s) {
+  return s.replace(/[\u3041-\u3096]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
+}
 
 const cellMap = {};
 DATA.cells.forEach(c => { cellMap[`${c.row},${c.col}`] = c; });
@@ -260,7 +487,7 @@ function advance(r, c, step) {
 function handleInputValue(input) {
   const cr = parseInt(input.dataset.row);
   const cc = parseInt(input.dataset.col);
-  const chars = [...input.value];
+  const chars = [...toKatakana(input.value)];
   input.classList.remove('correct', 'incorrect');
   if (chars.length === 0) { updateScore(); return; }
   input.value = chars[0];
@@ -276,7 +503,6 @@ function handleInputValue(input) {
   updateScore();
 }
 
-// グリッド描画
 const table = document.getElementById('cwTable');
 for (let r = 0; r < ROWS; r++) {
   const tr = document.createElement('tr');
@@ -302,10 +528,7 @@ for (let r = 0; r < ROWS; r++) {
       input.spellcheck = false;
 
       input.addEventListener('compositionstart', () => { composing = true; });
-      input.addEventListener('compositionend', e => {
-        composing = false;
-        handleInputValue(e.target);
-      });
+      input.addEventListener('compositionend', e => { composing = false; handleInputValue(e.target); });
       input.addEventListener('input', e => {
         if (composing || e.isComposing) return;
         handleInputValue(e.target);
@@ -340,9 +563,7 @@ for (let r = 0; r < ROWS; r++) {
         }
       });
       input.addEventListener('mousedown', () => {
-        if (document.activeElement === input) {
-          toggleDirectionAt(r, c);
-        }
+        if (document.activeElement === input) toggleDirectionAt(r, c);
       });
       input.addEventListener('focus', e => {
         const cr = parseInt(e.target.dataset.row);
@@ -358,7 +579,6 @@ for (let r = 0; r < ROWS; r++) {
   table.appendChild(tr);
 }
 
-// ヒント描画
 const acrossDiv = document.getElementById('acrossClues');
 const downDiv   = document.getElementById('downClues');
 [...DATA.placed].sort((a,b) => a.num - b.num).forEach(p => {
@@ -375,11 +595,15 @@ const downDiv   = document.getElementById('downClues');
   (p.direction === 'across' ? acrossDiv : downDiv).appendChild(div);
 });
 
+function isCorrect(input) {
+  return toKatakana(input.value) === toKatakana(input.dataset.answer);
+}
+
 function checkAll() {
   document.querySelectorAll('.cw input').forEach(input => {
     if (!input.value) return;
     input.classList.remove('correct', 'incorrect');
-    if (input.value === input.dataset.answer) input.classList.add('correct');
+    if (isCorrect(input)) input.classList.add('correct');
     else {
       input.classList.add('incorrect');
       setTimeout(() => input.classList.remove('incorrect'), 600);
@@ -404,7 +628,7 @@ function updateScore() {
       const r = p.direction === 'across' ? p.display_row : p.display_row + i;
       const c = p.direction === 'across' ? p.display_col + i : p.display_col;
       const inp = getInput(r, c);
-      return inp && inp.value === inp.dataset.answer;
+      return inp && isCorrect(inp);
     }).every(Boolean);
     if (allOk) {
       wordCorrect++;
